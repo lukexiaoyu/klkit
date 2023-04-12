@@ -1,36 +1,13 @@
-var __create = Object.create;
 var __defProp = Object.defineProperty;
-var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
-var __getProtoOf = Object.getPrototypeOf;
-var __hasOwnProp = Object.prototype.hasOwnProperty;
 var __defNormalProp = (obj, key2, value) => key2 in obj ? __defProp(obj, key2, { enumerable: true, configurable: true, writable: true, value }) : obj[key2] = value;
 var __esm = (fn, res) => function __init() {
   return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
-};
-var __commonJS = (cb, mod) => function __require() {
-  return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
 };
 var __export = (target, all) => {
   for (var name in all)
     __defProp(target, name, { get: all[name], enumerable: true });
 };
-var __copyProps = (to, from, except, desc) => {
-  if (from && typeof from === "object" || typeof from === "function") {
-    for (let key2 of __getOwnPropNames(from))
-      if (!__hasOwnProp.call(to, key2) && key2 !== except)
-        __defProp(to, key2, { get: () => from[key2], enumerable: !(desc = __getOwnPropDesc(from, key2)) || desc.enumerable });
-  }
-  return to;
-};
-var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
-  // If the importer is in node compatibility mode or this is not an ESM
-  // file that has been converted to a CommonJS file using a Babel-
-  // compatible transform (i.e. "__esModule" has not been set), then set
-  // "default" to the CommonJS "module.exports" for node compatibility.
-  isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
-  mod
-));
 var __publicField = (obj, key2, value) => {
   __defNormalProp(obj, typeof key2 !== "symbol" ? key2 + "" : key2, value);
   return value;
@@ -76,14 +53,6 @@ function subscribe(store, ...callbacks) {
   const unsub = store.subscribe(...callbacks);
   return unsub.unsubscribe ? () => unsub.unsubscribe() : unsub;
 }
-function compute_rest_props(props, keys) {
-  const rest = {};
-  keys = new Set(keys);
-  for (const k in props)
-    if (!keys.has(k) && k[0] !== "$")
-      rest[k] = props[k];
-  return rest;
-}
 function set_current_component(component5) {
   current_component = component5;
 }
@@ -99,65 +68,6 @@ function setContext(key2, context) {
 function getContext(key2) {
   return get_current_component().$$.context.get(key2);
 }
-function is_void(name) {
-  return void_element_names.test(name) || name.toLowerCase() === "!doctype";
-}
-function spread(args, attrs_to_add) {
-  const attributes = Object.assign({}, ...args);
-  if (attrs_to_add) {
-    const classes_to_add = attrs_to_add.classes;
-    const styles_to_add = attrs_to_add.styles;
-    if (classes_to_add) {
-      if (attributes.class == null) {
-        attributes.class = classes_to_add;
-      } else {
-        attributes.class += " " + classes_to_add;
-      }
-    }
-    if (styles_to_add) {
-      if (attributes.style == null) {
-        attributes.style = style_object_to_string(styles_to_add);
-      } else {
-        attributes.style = style_object_to_string(merge_ssr_styles(attributes.style, styles_to_add));
-      }
-    }
-  }
-  let str = "";
-  Object.keys(attributes).forEach((name) => {
-    if (invalid_attribute_name_character.test(name))
-      return;
-    const value = attributes[name];
-    if (value === true)
-      str += " " + name;
-    else if (boolean_attributes.has(name.toLowerCase())) {
-      if (value)
-        str += " " + name;
-    } else if (value != null) {
-      str += ` ${name}="${value}"`;
-    }
-  });
-  return str;
-}
-function merge_ssr_styles(style_attribute, style_directive) {
-  const style_object = {};
-  for (const individual_style of style_attribute.split(";")) {
-    const colon_index = individual_style.indexOf(":");
-    const name = individual_style.slice(0, colon_index).trim();
-    const value = individual_style.slice(colon_index + 1).trim();
-    if (!name)
-      continue;
-    style_object[name] = value;
-  }
-  for (const name in style_directive) {
-    const value = style_directive[name];
-    if (value) {
-      style_object[name] = value;
-    } else {
-      delete style_object[name];
-    }
-  }
-  return style_object;
-}
 function escape(value, is_attr = false) {
   const str = String(value);
   const pattern2 = is_attr ? ATTR_REGEX : CONTENT_REGEX;
@@ -172,16 +82,12 @@ function escape(value, is_attr = false) {
   }
   return escaped2 + str.substring(last);
 }
-function escape_attribute_value(value) {
-  const should_escape = typeof value === "string" || value && typeof value === "object";
-  return should_escape ? escape(value, true) : value;
-}
-function escape_object(obj) {
-  const result = {};
-  for (const key2 in obj) {
-    result[key2] = escape_attribute_value(obj[key2]);
+function each(items, fn) {
+  let str = "";
+  for (let i = 0; i < items.length; i += 1) {
+    str += fn(items[i], i);
   }
-  return result;
+  return str;
 }
 function validate_component(component5, name) {
   if (!component5 || !component5.$$render) {
@@ -233,42 +139,9 @@ function add_attribute(name, value, boolean) {
   const assignment = boolean && value === true ? "" : `="${escape(value, true)}"`;
   return ` ${name}${assignment}`;
 }
-function style_object_to_string(style_object) {
-  return Object.keys(style_object).filter((key2) => style_object[key2]).map((key2) => `${key2}: ${escape_attribute_value(style_object[key2])};`).join(" ");
-}
-var current_component, _boolean_attributes, boolean_attributes, void_element_names, invalid_attribute_name_character, ATTR_REGEX, CONTENT_REGEX, missing_component, on_destroy;
+var current_component, ATTR_REGEX, CONTENT_REGEX, missing_component, on_destroy;
 var init_chunks = __esm({
   ".svelte-kit/output/server/chunks/index.js"() {
-    _boolean_attributes = [
-      "allowfullscreen",
-      "allowpaymentrequest",
-      "async",
-      "autofocus",
-      "autoplay",
-      "checked",
-      "controls",
-      "default",
-      "defer",
-      "disabled",
-      "formnovalidate",
-      "hidden",
-      "inert",
-      "ismap",
-      "loop",
-      "multiple",
-      "muted",
-      "nomodule",
-      "novalidate",
-      "open",
-      "playsinline",
-      "readonly",
-      "required",
-      "reversed",
-      "selected"
-    ];
-    boolean_attributes = /* @__PURE__ */ new Set([..._boolean_attributes]);
-    void_element_names = /^(?:area|base|br|col|command|embed|hr|img|input|keygen|link|meta|param|source|track|wbr)$/;
-    invalid_attribute_name_character = /[\s'">/=\u{FDD0}-\u{FDEF}\u{FFFE}\u{FFFF}\u{1FFFE}\u{1FFFF}\u{2FFFE}\u{2FFFF}\u{3FFFE}\u{3FFFF}\u{4FFFE}\u{4FFFF}\u{5FFFE}\u{5FFFF}\u{6FFFE}\u{6FFFF}\u{7FFFE}\u{7FFFF}\u{8FFFE}\u{8FFFF}\u{9FFFE}\u{9FFFF}\u{AFFFE}\u{AFFFF}\u{BFFFE}\u{BFFFF}\u{CFFFE}\u{CFFFF}\u{DFFFE}\u{DFFFF}\u{EFFFE}\u{EFFFF}\u{FFFFE}\u{FFFFF}\u{10FFFE}\u{10FFFF}]/u;
     ATTR_REGEX = /[&"]/g;
     CONTENT_REGEX = /[&<]/g;
     missing_component = {
@@ -277,514 +150,24 @@ var init_chunks = __esm({
   }
 });
 
-// node_modules/.pnpm/classnames@2.3.2/node_modules/classnames/index.js
-var require_classnames = __commonJS({
-  "node_modules/.pnpm/classnames@2.3.2/node_modules/classnames/index.js"(exports, module) {
-    (function() {
-      "use strict";
-      var hasOwn = {}.hasOwnProperty;
-      var nativeCodeString = "[native code]";
-      function classNames3() {
-        var classes = [];
-        for (var i = 0; i < arguments.length; i++) {
-          var arg = arguments[i];
-          if (!arg)
-            continue;
-          var argType = typeof arg;
-          if (argType === "string" || argType === "number") {
-            classes.push(arg);
-          } else if (Array.isArray(arg)) {
-            if (arg.length) {
-              var inner = classNames3.apply(null, arg);
-              if (inner) {
-                classes.push(inner);
-              }
-            }
-          } else if (argType === "object") {
-            if (arg.toString !== Object.prototype.toString && !arg.toString.toString().includes("[native code]")) {
-              classes.push(arg.toString());
-              continue;
-            }
-            for (var key2 in arg) {
-              if (hasOwn.call(arg, key2) && arg[key2]) {
-                classes.push(key2);
-              }
-            }
-          }
-        }
-        return classes.join(" ");
-      }
-      if (typeof module !== "undefined" && module.exports) {
-        classNames3.default = classNames3;
-        module.exports = classNames3;
-      } else if (typeof define === "function" && typeof define.amd === "object" && define.amd) {
-        define("classnames", [], function() {
-          return classNames3;
-        });
-      } else {
-        window.classNames = classNames3;
-      }
-    })();
-  }
-});
-
 // .svelte-kit/output/server/entries/pages/_layout.svelte.js
 var layout_svelte_exports = {};
 __export(layout_svelte_exports, {
   default: () => Layout
 });
-function quintOut(t) {
-  return --t * t * t * t * t + 1;
-}
-var import_classnames, Frame, ToolbarButton, DarkMode, Navbar, NavBrand, Menu, NavHamburger, NavLi, NavUl, Layout;
+var Nav, Layout;
 var init_layout_svelte = __esm({
   ".svelte-kit/output/server/entries/pages/_layout.svelte.js"() {
     init_chunks();
-    import_classnames = __toESM(require_classnames(), 1);
-    Frame = create_ssr_component(($$result, $$props, $$bindings, slots) => {
-      let $$restProps = compute_rest_props($$props, [
-        "tag",
-        "color",
-        "rounded",
-        "border",
-        "shadow",
-        "transition",
-        "params",
-        "node",
-        "use",
-        "options"
-      ]);
-      setContext("background", true);
-      let { tag = "div" } = $$props;
-      let { color = "default" } = $$props;
-      let { rounded = false } = $$props;
-      let { border = false } = $$props;
-      let { shadow = false } = $$props;
-      let { transition = void 0 } = $$props;
-      let { params = {} } = $$props;
-      let { node = void 0 } = $$props;
-      let { use = noop } = $$props;
-      let { options: options2 = {} } = $$props;
-      const bgColors = {
-        gray: "bg-gray-50 dark:bg-gray-800",
-        red: "bg-red-50 dark:bg-gray-800",
-        yellow: "bg-yellow-50 dark:bg-gray-800 ",
-        green: "bg-green-50 dark:bg-gray-800 ",
-        indigo: "bg-indigo-50 dark:bg-gray-800 ",
-        purple: "bg-purple-50 dark:bg-gray-800 ",
-        pink: "bg-pink-50 dark:bg-gray-800 ",
-        blue: "bg-blue-50 dark:bg-gray-800 ",
-        light: "bg-gray-50 dark:bg-gray-700",
-        dark: "bg-gray-50 dark:bg-gray-800",
-        default: "bg-white dark:bg-gray-800",
-        dropdown: "bg-white dark:bg-gray-700",
-        navbar: "bg-white dark:bg-gray-900",
-        navbarUl: "bg-gray-50 dark:bg-gray-800",
-        form: "bg-gray-50 dark:bg-gray-700",
-        primary: "bg-primary-50 dark:bg-gray-800 ",
-        none: ""
-      };
-      const textColors = {
-        gray: "text-gray-800 dark:text-gray-300",
-        red: "text-red-800 dark:text-red-400",
-        yellow: "text-yellow-800 dark:text-yellow-300",
-        green: "text-green-800 dark:text-green-400",
-        indigo: "text-indigo-800 dark:text-indigo-400",
-        purple: "text-purple-800 dark:text-purple-400",
-        pink: "text-pink-800 dark:text-pink-400",
-        blue: "text-blue-800 dark:text-blue-400",
-        light: "text-gray-700 dark:text-gray-300",
-        dark: "text-gray-700 dark:text-gray-300",
-        default: "text-gray-500 dark:text-gray-400",
-        dropdown: "text-gray-700 dark:text-gray-200",
-        navbar: "text-gray-700 dark:text-gray-200",
-        navbarUl: "text-gray-700 dark:text-gray-400",
-        form: "text-gray-900 dark:text-white",
-        primary: "text-primary-800 dark:text-primary-400",
-        none: ""
-      };
-      const borderColors = {
-        gray: "border-gray-300 dark:border-gray-800",
-        red: "border-red-300 dark:border-red-800",
-        yellow: "border-yellow-300 dark:border-yellow-800",
-        green: "border-green-300 dark:border-green-800",
-        indigo: "border-indigo-300 dark:border-indigo-800",
-        purple: "border-purple-300 dark:border-purple-800",
-        pink: "border-pink-300 dark:border-pink-800",
-        blue: "border-blue-300 dark:border-blue-800",
-        light: "border-gray-500",
-        dark: "border-gray-500",
-        default: "border-gray-200 dark:border-gray-700",
-        dropdown: "border-gray-100 dark:border-gray-700",
-        navbar: "border-gray-100 dark:border-gray-700",
-        navbarUl: "border-gray-100 dark:border-gray-700",
-        form: "border-gray-300 dark:border-gray-700",
-        primary: "border-primary-500 dark:bg-primary-200 ",
-        none: ""
-      };
-      let divClass;
-      if ($$props.tag === void 0 && $$bindings.tag && tag !== void 0)
-        $$bindings.tag(tag);
-      if ($$props.color === void 0 && $$bindings.color && color !== void 0)
-        $$bindings.color(color);
-      if ($$props.rounded === void 0 && $$bindings.rounded && rounded !== void 0)
-        $$bindings.rounded(rounded);
-      if ($$props.border === void 0 && $$bindings.border && border !== void 0)
-        $$bindings.border(border);
-      if ($$props.shadow === void 0 && $$bindings.shadow && shadow !== void 0)
-        $$bindings.shadow(shadow);
-      if ($$props.transition === void 0 && $$bindings.transition && transition !== void 0)
-        $$bindings.transition(transition);
-      if ($$props.params === void 0 && $$bindings.params && params !== void 0)
-        $$bindings.params(params);
-      if ($$props.node === void 0 && $$bindings.node && node !== void 0)
-        $$bindings.node(node);
-      if ($$props.use === void 0 && $$bindings.use && use !== void 0)
-        $$bindings.use(use);
-      if ($$props.options === void 0 && $$bindings.options && options2 !== void 0)
-        $$bindings.options(options2);
-      {
-        setContext("color", color);
-      }
-      divClass = (0, import_classnames.default)(bgColors[color], textColors[color], rounded && (color === "dropdown" ? "rounded" : "rounded-lg"), border && "border", borderColors[color], shadow && "shadow-md", $$props.class);
-      return `${transition ? `${((tag$1) => {
-        return tag$1 ? `<${tag}${spread([escape_object($$restProps), { class: escape_attribute_value(divClass) }], {})}${add_attribute("this", node, 0)}>${is_void(tag$1) ? "" : `${slots.default ? slots.default({}) : ``}`}${is_void(tag$1) ? "" : `</${tag$1}>`}` : "";
-      })(tag)}` : `${((tag$1) => {
-        return tag$1 ? `<${tag}${spread([escape_object($$restProps), { class: escape_attribute_value(divClass) }], {})}${add_attribute("this", node, 0)}>${is_void(tag$1) ? "" : `${slots.default ? slots.default({}) : ``}`}${is_void(tag$1) ? "" : `</${tag$1}>`}` : "";
-      })(tag)}`}`;
-    });
-    ToolbarButton = create_ssr_component(($$result, $$props, $$bindings, slots) => {
-      let $$restProps = compute_rest_props($$props, ["color", "name", "ariaLabel", "size"]);
-      const background = getContext("background");
-      let { color = "default" } = $$props;
-      let { name = void 0 } = $$props;
-      let { ariaLabel = void 0 } = $$props;
-      let { size = "md" } = $$props;
-      const colors = {
-        dark: "text-gray-500 hover:text-gray-900 hover:bg-gray-200 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-700",
-        gray: "text-gray-500 focus:ring-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700",
-        red: "text-red-500 focus:ring-red-400 hover:bg-red-200 dark:hover:bg-gray-700",
-        yellow: "text-yellow-500 focus:ring-yellow-400 hover:bg-yellow-200 dark:hover:bg-gray-700",
-        green: "text-green-500 focus:ring-green-400 hover:bg-green-200 dark:hover:bg-gray-700",
-        indigo: "text-indigo-500 focus:ring-indigo-400 hover:bg-indigo-200 dark:hover:bg-gray-700",
-        purple: "text-purple-500 focus:ring-purple-400 hover:bg-purple-200 dark:hover:bg-gray-700",
-        pink: "text-pink-500 focus:ring-pink-400 hover:bg-pink-200 dark:hover:bg-gray-700",
-        blue: "text-blue-500 focus:ring-blue-400 hover:bg-blue-200 dark:hover:bg-gray-700",
-        default: "focus:ring-gray-400 "
-      };
-      const sizing = {
-        xs: "m-0.5 rounded focus:ring-1 p-0.5",
-        sm: "m-0.5 rounded focus:ring-1 p-0.5",
-        md: "rounded-lg focus:ring-2 p-1.5"
-      };
-      let buttonClass;
-      const svgSizes = {
-        xs: "w-3 h-3",
-        sm: "w-3.5 h-3.5",
-        md: "w-5 h-5"
-      };
-      if ($$props.color === void 0 && $$bindings.color && color !== void 0)
-        $$bindings.color(color);
-      if ($$props.name === void 0 && $$bindings.name && name !== void 0)
-        $$bindings.name(name);
-      if ($$props.ariaLabel === void 0 && $$bindings.ariaLabel && ariaLabel !== void 0)
-        $$bindings.ariaLabel(ariaLabel);
-      if ($$props.size === void 0 && $$bindings.size && size !== void 0)
-        $$bindings.size(size);
-      buttonClass = (0, import_classnames.default)(
-        "focus:outline-none whitespace-normal",
-        sizing[size],
-        colors[color],
-        color === "default" && (background ? "hover:bg-gray-100 dark:hover:bg-gray-600" : "hover:bg-gray-100 dark:hover:bg-gray-700"),
-        $$props.class
-      );
-      return `<button${spread(
-        [
-          { type: "button" },
-          escape_object($$restProps),
-          {
-            class: escape_attribute_value(buttonClass)
-          },
-          {
-            "aria-label": escape_attribute_value(ariaLabel ?? name)
-          }
-        ],
-        {}
-      )}>${name ? `<span class="sr-only">${escape(name)}</span>` : ``}
-  ${slots.default ? slots.default({ svgSize: svgSizes[size] }) : ``}</button>`;
-    });
-    DarkMode = create_ssr_component(($$result, $$props, $$bindings, slots) => {
-      let $$restProps = compute_rest_props($$props, ["btnClass"]);
-      let { btnClass = "text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5" } = $$props;
-      if ($$props.btnClass === void 0 && $$bindings.btnClass && btnClass !== void 0)
-        $$bindings.btnClass(btnClass);
-      return `<button${spread(
-        [
-          { "aria-label": "Dark mode" },
-          { type: "button" },
-          escape_object($$restProps),
-          {
-            class: escape_attribute_value((0, import_classnames.default)(btnClass, $$props.class))
-          }
-        ],
-        {}
-      )}><span class="hidden dark:block">${slots.lightIcon ? slots.lightIcon({}) : `
-      <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1
-  0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
-    `}</span>
-  <span class="dark:hidden">${slots.darkIcon ? slots.darkIcon({}) : `
-      <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
-    `}</span></button>`;
-    });
-    Navbar = create_ssr_component(($$result, $$props, $$bindings, slots) => {
-      let $$restProps = compute_rest_props($$props, ["navClass", "navDivClass", "fluid", "color"]);
-      let { navClass = "px-2 sm:px-4 py-2.5 w-full" } = $$props;
-      let { navDivClass = "mx-auto flex flex-wrap justify-between items-center " } = $$props;
-      let { fluid = false } = $$props;
-      let { color = "navbar" } = $$props;
-      let hidden = true;
-      let toggle = () => {
-        hidden = !hidden;
-      };
-      if ($$props.navClass === void 0 && $$bindings.navClass && navClass !== void 0)
-        $$bindings.navClass(navClass);
-      if ($$props.navDivClass === void 0 && $$bindings.navDivClass && navDivClass !== void 0)
-        $$bindings.navDivClass(navDivClass);
-      if ($$props.fluid === void 0 && $$bindings.fluid && fluid !== void 0)
-        $$bindings.fluid(fluid);
-      if ($$props.color === void 0 && $$bindings.color && color !== void 0)
-        $$bindings.color(color);
-      return `${validate_component(Frame, "Frame").$$render(
-        $$result,
-        Object.assign({}, { tag: "nav" }, { color }, $$restProps, {
-          class: (0, import_classnames.default)(navClass, $$props.class)
-        }),
-        {},
-        {
-          default: () => {
-            return `<div${add_attribute("class", (0, import_classnames.default)(navDivClass, fluid || "container"), 0)}>${slots.default ? slots.default({ hidden, toggle }) : ``}</div>`;
-          }
-        }
-      )}`;
-    });
-    NavBrand = create_ssr_component(($$result, $$props, $$bindings, slots) => {
-      let $$restProps = compute_rest_props($$props, ["href"]);
-      let { href = "" } = $$props;
-      if ($$props.href === void 0 && $$bindings.href && href !== void 0)
-        $$bindings.href(href);
-      return `<a${spread(
-        [
-          { href: escape_attribute_value(href) },
-          escape_object($$restProps),
-          {
-            class: escape_attribute_value((0, import_classnames.default)("flex items-center", $$props.class))
-          }
-        ],
-        {}
-      )}>${slots.default ? slots.default({}) : ``}</a>`;
-    });
-    Menu = create_ssr_component(($$result, $$props, $$bindings, slots) => {
-      let $$restProps = compute_rest_props($$props, ["size", "color", "variation", "ariaLabel"]);
-      let { size = "24" } = $$props;
-      let { color = "currentColor" } = $$props;
-      let { variation = "outline" } = $$props;
-      let viewBox;
-      let svgpath;
-      let svgoutline = `<path d="M3.75 6.75H20.25M3.75 12H20.25M3.75 17.25H20.25" stroke="${color}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/> `;
-      let svgsolid = `<path fill-rule="evenodd" clip-rule="evenodd" d="M3 6.75C3 6.33579 3.33579 6 3.75 6H20.25C20.6642 6 21 6.33579 21 6.75C21 7.16421 20.6642 7.5 20.25 7.5H3.75C3.33579 7.5 3 7.16421 3 6.75ZM3 12C3 11.5858 3.33579 11.25 3.75 11.25H20.25C20.6642 11.25 21 11.5858 21 12C21 12.4142 20.6642 12.75 20.25 12.75H3.75C3.33579 12.75 3 12.4142 3 12ZM3 17.25C3 16.8358 3.33579 16.5 3.75 16.5H20.25C20.6642 16.5 21 16.8358 21 17.25C21 17.6642 20.6642 18 20.25 18H3.75C3.33579 18 3 17.6642 3 17.25Z" fill="${color}"/> `;
-      let { ariaLabel = "bars 3" } = $$props;
-      if ($$props.size === void 0 && $$bindings.size && size !== void 0)
-        $$bindings.size(size);
-      if ($$props.color === void 0 && $$bindings.color && color !== void 0)
-        $$bindings.color(color);
-      if ($$props.variation === void 0 && $$bindings.variation && variation !== void 0)
-        $$bindings.variation(variation);
-      if ($$props.ariaLabel === void 0 && $$bindings.ariaLabel && ariaLabel !== void 0)
-        $$bindings.ariaLabel(ariaLabel);
-      {
-        switch (variation) {
-          case "outline":
-            svgpath = svgoutline;
-            viewBox = "0 0 24 24";
-            break;
-          case "solid":
-            svgpath = svgsolid;
-            viewBox = "0 0 24 24";
-            break;
-          default:
-            svgpath = svgoutline;
-            viewBox = "0 0 24 24";
-        }
-      }
-      return `<svg${spread(
-        [
-          { xmlns: "http://www.w3.org/2000/svg" },
-          { width: escape_attribute_value(size) },
-          { height: escape_attribute_value(size) },
-          {
-            class: escape_attribute_value($$props.class)
-          },
-          escape_object($$restProps),
-          {
-            "aria-label": escape_attribute_value(ariaLabel)
-          },
-          { fill: "none" },
-          { viewBox: escape_attribute_value(viewBox) },
-          { "stroke-width": "2" }
-        ],
-        {}
-      )}><!-- HTML_TAG_START -->${svgpath}<!-- HTML_TAG_END --></svg>`;
-    });
-    NavHamburger = create_ssr_component(($$result, $$props, $$bindings, slots) => {
-      let $$restProps = compute_rest_props($$props, ["btnClass"]);
-      let { btnClass = "ml-3 md:hidden" } = $$props;
-      if ($$props.btnClass === void 0 && $$bindings.btnClass && btnClass !== void 0)
-        $$bindings.btnClass(btnClass);
-      return `${validate_component(ToolbarButton, "ToolbarButton").$$render(
-        $$result,
-        Object.assign({}, { name: "Open main menu" }, $$restProps, {
-          class: (0, import_classnames.default)(btnClass, $$props.class)
-        }),
-        {},
-        {
-          default: () => {
-            return `${validate_component(Menu, "Menu").$$render($$result, { class: "h-6 w-6 shrink-0" }, {}, {})}`;
-          }
-        }
-      )}`;
-    });
-    NavLi = create_ssr_component(($$result, $$props, $$bindings, slots) => {
-      let $$restProps = compute_rest_props($$props, ["href", "active", "activeClass", "nonActiveClass"]);
-      let { href = "" } = $$props;
-      let { active = false } = $$props;
-      let { activeClass = void 0 } = $$props;
-      let { nonActiveClass = void 0 } = $$props;
-      const context = getContext("navbar") ?? {};
-      let liClass;
-      if ($$props.href === void 0 && $$bindings.href && href !== void 0)
-        $$bindings.href(href);
-      if ($$props.active === void 0 && $$bindings.active && active !== void 0)
-        $$bindings.active(active);
-      if ($$props.activeClass === void 0 && $$bindings.activeClass && activeClass !== void 0)
-        $$bindings.activeClass(activeClass);
-      if ($$props.nonActiveClass === void 0 && $$bindings.nonActiveClass && nonActiveClass !== void 0)
-        $$bindings.nonActiveClass(nonActiveClass);
-      liClass = (0, import_classnames.default)(
-        "block py-2 pr-4 pl-3 md:p-0 rounded md:border-0",
-        active ? activeClass ?? context.activeClass : nonActiveClass ?? context.nonActiveClass,
-        $$props.class
-      );
-      return `<li>${((tag) => {
-        return tag ? `<${href ? "a" : "div"}${spread(
-          [
-            { href: escape_attribute_value(href) },
-            escape_object($$restProps),
-            { class: escape_attribute_value(liClass) }
-          ],
-          {}
-        )}>${is_void(tag) ? "" : `${slots.default ? slots.default({}) : ``}`}${is_void(tag) ? "" : `</${tag}>`}` : "";
-      })(href ? "a" : "div")}</li>`;
-    });
-    NavUl = create_ssr_component(($$result, $$props, $$bindings, slots) => {
-      let $$restProps = compute_rest_props($$props, ["divClass", "ulClass", "hidden", "slideParams", "activeClass", "nonActiveClass"]);
-      let { divClass = "w-full md:block md:w-auto" } = $$props;
-      let { ulClass = "flex flex-col p-4 mt-4 md:flex-row md:space-x-8 md:mt-0 md:text-sm md:font-medium" } = $$props;
-      let { hidden = true } = $$props;
-      let { slideParams = {
-        delay: 250,
-        duration: 500,
-        easing: quintOut
-      } } = $$props;
-      let { activeClass = "text-white bg-blue-700 md:bg-transparent md:text-blue-700 md:dark:text-white dark:bg-blue-600 md:dark:bg-transparent" } = $$props;
-      let { nonActiveClass = "text-gray-700 hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-blue-700 dark:text-gray-400 md:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent" } = $$props;
-      setContext("navbar", { activeClass, nonActiveClass });
-      let _divClass;
-      let _ulClass;
-      if ($$props.divClass === void 0 && $$bindings.divClass && divClass !== void 0)
-        $$bindings.divClass(divClass);
-      if ($$props.ulClass === void 0 && $$bindings.ulClass && ulClass !== void 0)
-        $$bindings.ulClass(ulClass);
-      if ($$props.hidden === void 0 && $$bindings.hidden && hidden !== void 0)
-        $$bindings.hidden(hidden);
-      if ($$props.slideParams === void 0 && $$bindings.slideParams && slideParams !== void 0)
-        $$bindings.slideParams(slideParams);
-      if ($$props.activeClass === void 0 && $$bindings.activeClass && activeClass !== void 0)
-        $$bindings.activeClass(activeClass);
-      if ($$props.nonActiveClass === void 0 && $$bindings.nonActiveClass && nonActiveClass !== void 0)
-        $$bindings.nonActiveClass(nonActiveClass);
-      _divClass = (0, import_classnames.default)(divClass, $$props.class);
-      _ulClass = (0, import_classnames.default)(
-        ulClass,
-        // 'divide-y md:divide-y-0 divide-gray-100 dark:divide-gray-700',
-        $$props.class
-      );
-      return `${!hidden ? `<div${spread([escape_object($$restProps), { class: escape_attribute_value(_divClass) }], {})}>${validate_component(Frame, "Frame").$$render(
-        $$result,
-        {
-          tag: "ul",
-          border: true,
-          rounded: true,
-          color: "navbarUl",
-          class: _ulClass
-        },
-        {},
-        {
-          default: () => {
-            return `${slots.default ? slots.default({}) : ``}`;
-          }
-        }
-      )}</div>` : `<div${spread(
-        [
-          escape_object($$restProps),
-          { class: escape_attribute_value(_divClass) },
-          { hidden: hidden || null }
-        ],
-        {}
-      )}><ul${add_attribute("class", _ulClass, 0)}>${slots.default ? slots.default({}) : ``}</ul></div>`}`;
+    Nav = create_ssr_component(($$result, $$props, $$bindings, slots) => {
+      const adds = [{ name: "home", link: "/" }, { name: "one", link: "/one" }];
+      return `<main class="container mx-auto shadow-md rounded-md shadow-gray-200">${each(adds, (x) => {
+        return `<a${add_attribute("href", x.link, 0)}>${escape(x.name)}</a>`;
+      })}
+</main>`;
     });
     Layout = create_ssr_component(($$result, $$props, $$bindings, slots) => {
-      return `${validate_component(Navbar, "Navbar").$$render($$result, {}, {}, {
-        default: ({ hidden, toggle }) => {
-          return `${validate_component(NavBrand, "NavBrand").$$render($$result, { href: "/" }, {}, {
-            default: () => {
-              return `<img src="https://flowbite.com/docs/images/logo.svg" class="mr-3 h-6 sm:h-9" alt="Flowbite Logo">
-    <span class="self-center whitespace-nowrap text-xl font-semibold dark:text-white">Flowbite
-    </span>`;
-            }
-          })}
-  ${validate_component(NavHamburger, "NavHamburger").$$render($$result, {}, {}, {})}
-  ${validate_component(NavUl, "NavUl").$$render($$result, { hidden }, {}, {
-            default: () => {
-              return `${validate_component(NavLi, "NavLi").$$render($$result, { href: "/", active: true }, {}, {
-                default: () => {
-                  return `Home`;
-                }
-              })}
-    ${validate_component(NavLi, "NavLi").$$render($$result, { href: "/one" }, {}, {
-                default: () => {
-                  return `One`;
-                }
-              })}
-    ${validate_component(NavLi, "NavLi").$$render($$result, { href: "/services" }, {}, {
-                default: () => {
-                  return `Services`;
-                }
-              })}
-    ${validate_component(NavLi, "NavLi").$$render($$result, { href: "/pricing" }, {}, {
-                default: () => {
-                  return `Pricing`;
-                }
-              })}
-    ${validate_component(NavLi, "NavLi").$$render($$result, { href: "/contact" }, {}, {
-                default: () => {
-                  return `Contact`;
-                }
-              })}`;
-            }
-          })}
-  ${validate_component(DarkMode, "DarkMode").$$render($$result, {}, {}, {})}`;
-        }
-      })}
+      return `${validate_component(Nav, "Nav").$$render($$result, {}, {}, {})}
 <div class="container mx-auto">${slots.default ? slots.default({}) : ``}
 </div>`;
     });
@@ -806,9 +189,9 @@ var init__ = __esm({
   ".svelte-kit/output/server/nodes/0.js"() {
     index = 0;
     component = async () => (await Promise.resolve().then(() => (init_layout_svelte(), layout_svelte_exports))).default;
-    file = "_app/immutable/entry/_layout.svelte.eee99df3.js";
-    imports = ["_app/immutable/entry/_layout.svelte.eee99df3.js", "_app/immutable/chunks/index.14af5c92.js", "_app/immutable/chunks/Indicator.svelte_svelte_type_style_lang.7adfd83d.js"];
-    stylesheets = ["_app/immutable/assets/_layout.4de875a6.css", "_app/immutable/assets/Indicator.1d121e74.css"];
+    file = "_app/immutable/entry/_layout.svelte.18796262.js";
+    imports = ["_app/immutable/entry/_layout.svelte.18796262.js", "_app/immutable/chunks/index.a6dfc2d3.js"];
+    stylesheets = ["_app/immutable/assets/_layout.e20aacec.css"];
     fonts = [];
   }
 });
@@ -866,8 +249,8 @@ var init__2 = __esm({
   ".svelte-kit/output/server/nodes/1.js"() {
     index2 = 1;
     component2 = async () => (await Promise.resolve().then(() => (init_error_svelte(), error_svelte_exports))).default;
-    file2 = "_app/immutable/entry/error.svelte.24984d00.js";
-    imports2 = ["_app/immutable/entry/error.svelte.24984d00.js", "_app/immutable/chunks/index.14af5c92.js", "_app/immutable/chunks/singletons.cf6dfd31.js"];
+    file2 = "_app/immutable/entry/error.svelte.26d50911.js";
+    imports2 = ["_app/immutable/entry/error.svelte.26d50911.js", "_app/immutable/chunks/index.a6dfc2d3.js", "_app/immutable/chunks/singletons.e65b2ad5.js"];
     stylesheets2 = [];
     fonts2 = [];
   }
@@ -878,307 +261,12 @@ var page_svelte_exports = {};
 __export(page_svelte_exports, {
   default: () => Page
 });
-var import_classnames2, Button, Heading, P, Page;
+var Page;
 var init_page_svelte = __esm({
   ".svelte-kit/output/server/entries/pages/_page.svelte.js"() {
     init_chunks();
-    import_classnames2 = __toESM(require_classnames(), 1);
-    Button = create_ssr_component(($$result, $$props, $$bindings, slots) => {
-      let $$restProps = compute_rest_props($$props, ["pill", "outline", "gradient", "size", "href", "btnClass", "type", "color", "shadow"]);
-      const group = getContext("group");
-      let { pill = false } = $$props;
-      let { outline = false } = $$props;
-      let { gradient = false } = $$props;
-      let { size = group ? "sm" : "md" } = $$props;
-      let { href = void 0 } = $$props;
-      let { btnClass = void 0 } = $$props;
-      let { type = "button" } = $$props;
-      let { color = group ? outline ? "dark" : "alternative" : "blue" } = $$props;
-      let { shadow = null } = $$props;
-      const colorClasses = {
-        blue: "text-white bg-blue-700 hover:bg-blue-800 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800",
-        dark: "text-white bg-gray-800 hover:bg-gray-900 focus:ring-gray-300 dark:bg-gray-800 dark:hover:bg-gray-700 dark:focus:ring-gray-700",
-        alternative: "text-gray-900 bg-white border border-gray-200 dark:border-gray-600 hover:bg-gray-100 focus:ring-gray-200 dark:bg-gray-800 dark:text-gray-400 hover:text-blue-700 focus:text-blue-700 dark:focus:text-white dark:hover:text-white dark:hover:bg-gray-700 dark:focus:ring-gray-700",
-        light: "text-gray-900 bg-white border border-gray-300 hover:bg-gray-100 focus:ring-gray-200 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700",
-        green: "text-white bg-green-700 hover:bg-green-800 focus:ring-green-300 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800",
-        red: "text-white bg-red-700 hover:bg-red-800 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-900",
-        yellow: "text-white bg-yellow-400 hover:bg-yellow-500 focus:ring-yellow-300 dark:focus:ring-yellow-900",
-        primary: "text-white bg-primary-700 hover:bg-primary-800 focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800",
-        purple: "text-white bg-purple-700 hover:bg-purple-800 focus:ring-purple-300 dark:bg-purple-600 dark:hover:bg-purple-700 dark:focus:ring-purple-900"
-      };
-      const gradientClasses = {
-        blue: "text-white bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br focus:ring-blue-300 dark:focus:ring-blue-800 ",
-        green: "text-white bg-gradient-to-r from-green-400 via-green-500 to-green-600 hover:bg-gradient-to-br focus:ring-green-300 dark:focus:ring-green-800",
-        cyan: "text-white bg-gradient-to-r from-cyan-400 via-cyan-500 to-cyan-600 hover:bg-gradient-to-br focus:ring-cyan-300 dark:focus:ring-cyan-800",
-        teal: "text-white bg-gradient-to-r from-teal-400 via-teal-500 to-teal-600 hover:bg-gradient-to-br focus:ring-teal-300 dark:focus:ring-teal-800",
-        lime: "text-gray-900 bg-gradient-to-r from-lime-200 via-lime-400 to-lime-500 hover:bg-gradient-to-br focus:ring-lime-300 dark:focus:ring-lime-800",
-        red: "text-white bg-gradient-to-r from-red-400 via-red-500 to-red-600 hover:bg-gradient-to-br focus:ring-red-300 dark:focus:ring-red-800",
-        pink: "text-white bg-gradient-to-r from-pink-400 via-pink-500 to-pink-600 hover:bg-gradient-to-br focus:ring-pink-300 dark:focus:ring-pink-800",
-        purple: "text-white bg-gradient-to-r from-purple-500 via-purple-600 to-purple-700 hover:bg-gradient-to-br focus:ring-purple-300 dark:focus:ring-purple-800",
-        purpleToBlue: "text-white bg-gradient-to-br from-purple-600 to-blue-500 hover:bg-gradient-to-bl focus:ring-blue-300 dark:focus:ring-blue-800",
-        cyanToBlue: "text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:bg-gradient-to-bl focus:ring-cyan-300 dark:focus:ring-cyan-800",
-        greenToBlue: "text-white bg-gradient-to-br from-green-400 to-blue-600 hover:bg-gradient-to-bl focus:ring-green-200 dark:focus:ring-green-800",
-        purpleToPink: "text-white bg-gradient-to-r from-purple-500 to-pink-500 hover:bg-gradient-to-l focus:ring-purple-200 dark:focus:ring-purple-800",
-        pinkToOrange: "text-white bg-gradient-to-br from-pink-500 to-orange-400 hover:bg-gradient-to-bl focus:ring-pink-200 dark:focus:ring-pink-800",
-        tealToLime: "text-gray-900 bg-gradient-to-r from-teal-200 to-lime-200 hover:bg-gradient-to-l focus:ring-lime-200 dark:focus:ring-teal-700",
-        redToYellow: "text-gray-900 bg-gradient-to-r from-red-200 via-red-300 to-yellow-200 hover:bg-gradient-to-bl focus:ring-red-100 dark:focus:ring-red-400"
-      };
-      const coloredShadowClasses = {
-        blue: "shadow-lg shadow-blue-500/50 dark:shadow-lg dark:shadow-blue-800/80",
-        green: "shadow-lg shadow-green-500/50 dark:shadow-lg dark:shadow-green-800/80",
-        cyan: "shadow-lg shadow-cyan-500/50 dark:shadow-lg dark:shadow-cyan-800/80",
-        teal: "shadow-lg shadow-teal-500/50 dark:shadow-lg dark:shadow-teal-800/80 ",
-        lime: "shadow-lg shadow-lime-500/50 dark:shadow-lg dark:shadow-lime-800/80",
-        red: "shadow-lg shadow-red-500/50 dark:shadow-lg dark:shadow-red-800/80 ",
-        pink: "shadow-lg shadow-pink-500/50 dark:shadow-lg dark:shadow-pink-800/80",
-        purple: "shadow-lg shadow-purple-500/50 dark:shadow-lg dark:shadow-purple-800/80"
-      };
-      const outlineClasses = {
-        blue: "text-blue-700 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-blue-300 dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-600 dark:focus:ring-blue-800",
-        light: "text-gray-500 hover:text-gray-900 bg-white border border-gray-200 dark:border-gray-600 dark:hover:text-white dark:text-gray-400 hover:bg-gray-50 dark:bg-gray-700 dark:hover:bg-gray-600 focus:ring-4 focus:ring-gray-300 dark:focus:ring-gray-400",
-        dark: "text-gray-900 hover:text-white border border-gray-800 hover:bg-gray-900 focus:bg-gray-900 focus:text-white focus:ring-gray-300 dark:border-gray-600 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800",
-        green: "text-green-700 hover:text-white border border-green-700 hover:bg-green-800 focus:ring-green-300 dark:border-green-500 dark:text-green-500 dark:hover:text-white dark:hover:bg-green-600 dark:focus:ring-green-800",
-        red: "text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:ring-red-300 dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900",
-        yellow: "text-yellow-400 hover:text-white border border-yellow-400 hover:bg-yellow-500 focus:ring-yellow-300 dark:border-yellow-300 dark:text-yellow-300 dark:hover:text-white dark:hover:bg-yellow-400 dark:focus:ring-yellow-900",
-        purple: "text-purple-700 hover:text-white border border-purple-700 hover:bg-purple-800 focus:ring-purple-300 dark:border-purple-400 dark:text-purple-400 dark:hover:text-white dark:hover:bg-purple-500 dark:focus:ring-purple-900"
-      };
-      const sizeClasses = {
-        xs: "px-3 py-2 text-xs",
-        sm: "px-4 py-2 text-sm",
-        md: "px-5 py-2.5 text-sm",
-        lg: "px-5 py-3 text-base",
-        xl: "px-6 py-3.5 text-base"
-      };
-      function rounded(gradientOutline = false) {
-        if (group) {
-          return pill ? "first:rounded-l-full last:rounded-r-full" : gradientOutline ? "first:rounded-l-md last:rounded-r-md" : "first:rounded-l-lg last:rounded-r-lg";
-        }
-        return pill ? "rounded-full" : gradientOutline ? "rounded-md" : "rounded-lg";
-      }
-      const hasBorder = () => outline || color === "alternative" || color === "light";
-      let buttonClass;
-      let gradientOutlineClass;
-      if ($$props.pill === void 0 && $$bindings.pill && pill !== void 0)
-        $$bindings.pill(pill);
-      if ($$props.outline === void 0 && $$bindings.outline && outline !== void 0)
-        $$bindings.outline(outline);
-      if ($$props.gradient === void 0 && $$bindings.gradient && gradient !== void 0)
-        $$bindings.gradient(gradient);
-      if ($$props.size === void 0 && $$bindings.size && size !== void 0)
-        $$bindings.size(size);
-      if ($$props.href === void 0 && $$bindings.href && href !== void 0)
-        $$bindings.href(href);
-      if ($$props.btnClass === void 0 && $$bindings.btnClass && btnClass !== void 0)
-        $$bindings.btnClass(btnClass);
-      if ($$props.type === void 0 && $$bindings.type && type !== void 0)
-        $$bindings.type(type);
-      if ($$props.color === void 0 && $$bindings.color && color !== void 0)
-        $$bindings.color(color);
-      if ($$props.shadow === void 0 && $$bindings.shadow && shadow !== void 0)
-        $$bindings.shadow(shadow);
-      buttonClass = btnClass ? btnClass : (0, import_classnames2.default)(
-        "text-center font-medium",
-        group ? "focus:ring-2" : "focus:ring-4",
-        group && "focus:z-10",
-        group || "focus:outline-none",
-        outline && gradient ? "p-0.5" : "inline-flex items-center justify-center " + sizeClasses[size],
-        gradient ? gradientClasses[color] : outline ? outlineClasses[color] : colorClasses[color],
-        color === "alternative" && (group ? "dark:bg-gray-700 dark:text-white dark:border-gray-700 dark:hover:border-gray-600 dark:hover:bg-gray-600" : "dark:bg-transparent dark:border-gray-800 dark:hover:border-gray-700"),
-        outline && color === "dark" && (group ? "dark:text-white dark:border-white" : "dark:text-gray-400 dark:border-gray-700"),
-        hasBorder() && group && "border-l-0 first:border-l",
-        rounded(false),
-        shadow && coloredShadowClasses[shadow],
-        $$props.disabled && "cursor-not-allowed opacity-50",
-        $$props.class
-      );
-      gradientOutlineClass = (0, import_classnames2.default)("inline-flex items-center justify-center", sizeClasses[size], rounded(true), "bg-white text-gray-900 dark:bg-gray-900 dark:text-white", "transition-all duration-75 ease-in group-hover:bg-opacity-0 group-hover:text-inherit");
-      return `${((tag) => {
-        return tag ? `<${href ? "a" : "button"}${spread(
-          [
-            {
-              type: escape_attribute_value(href ? void 0 : type)
-            },
-            { href: escape_attribute_value(href) },
-            escape_object($$restProps),
-            {
-              class: escape_attribute_value(buttonClass)
-            }
-          ],
-          {}
-        )}>${is_void(tag) ? "" : `${outline && gradient ? `
-    <span${add_attribute("class", gradientOutlineClass, 0)}>${slots.default ? slots.default({}) : ``}</span>` : `${slots.default ? slots.default({}) : ``}`}`}${is_void(tag) ? "" : `</${tag}>`}` : "";
-      })(href ? "a" : "button")}`;
-    });
-    Heading = create_ssr_component(($$result, $$props, $$bindings, slots) => {
-      let $$restProps = compute_rest_props($$props, ["tag", "color", "customSize"]);
-      let { tag = "h1" } = $$props;
-      let { color = "text-gray-900 dark:text-white" } = $$props;
-      let { customSize = "" } = $$props;
-      const textSizes = {
-        h1: "text-5xl font-extrabold",
-        h2: "text-4xl font-bold",
-        h3: "text-3xl font-bold",
-        h4: "text-2xl font-bold",
-        h5: "text-xl font-bold",
-        h6: "text-lg font-bold"
-      };
-      if ($$props.tag === void 0 && $$bindings.tag && tag !== void 0)
-        $$bindings.tag(tag);
-      if ($$props.color === void 0 && $$bindings.color && color !== void 0)
-        $$bindings.color(color);
-      if ($$props.customSize === void 0 && $$bindings.customSize && customSize !== void 0)
-        $$bindings.customSize(customSize);
-      return `${((tag$1) => {
-        return tag$1 ? `<${tag}${spread(
-          [
-            escape_object($$restProps),
-            {
-              class: escape_attribute_value((0, import_classnames2.default)(customSize ? customSize : textSizes[tag], color, "w-full", $$props.class))
-            }
-          ],
-          {}
-        )}>${is_void(tag$1) ? "" : `${slots.default ? slots.default({}) : ``}`}${is_void(tag$1) ? "" : `</${tag$1}>`}` : "";
-      })(tag)}`;
-    });
-    P = create_ssr_component(($$result, $$props, $$bindings, slots) => {
-      let $$restProps = compute_rest_props($$props, [
-        "color",
-        "height",
-        "align",
-        "justify",
-        "italic",
-        "firstupper",
-        "upperClass",
-        "opacity",
-        "whitespace",
-        "size",
-        "space",
-        "weight"
-      ]);
-      let { color = "text-gray-900 dark:text-white" } = $$props;
-      let { height = "normal" } = $$props;
-      let { align = "left" } = $$props;
-      let { justify = false } = $$props;
-      let { italic = false } = $$props;
-      let { firstupper = false } = $$props;
-      let { upperClass = "first-line:uppercase first-line:tracking-widest first-letter:text-7xl first-letter:font-bold first-letter:text-gray-900 dark:first-letter:text-gray-100 first-letter:mr-3 first-letter:float-left" } = $$props;
-      let { opacity = void 0 } = $$props;
-      let { whitespace = "normal" } = $$props;
-      let { size = "base" } = $$props;
-      let { space = void 0 } = $$props;
-      let { weight = "normal" } = $$props;
-      const sizes = {
-        xs: "text-xs",
-        sm: "text-sm",
-        base: "text-base",
-        lg: "text-lg",
-        xl: "text-xl",
-        "2xl": "text-2xl",
-        "3xl": "text-3xl",
-        "4xl": "text-4xl",
-        "5xl": "text-5xl",
-        "6xl": "text-6xl",
-        "7xl": "text-7xl",
-        "8xl": "text-8xl",
-        "9xl": "text-9xl"
-      };
-      const weights = {
-        thin: "font-thin",
-        extralight: "font-extralight",
-        light: "font-light",
-        normal: "font-normal",
-        medium: "font-medium",
-        semibold: "font-semibold",
-        bold: "font-bold",
-        extrabold: "font-extrabold",
-        black: "font-black"
-      };
-      const spaces = {
-        tighter: "tracking-tighter",
-        tight: "tracking-tight",
-        normal: "tracking-normal",
-        wide: "tracking-wide",
-        wider: "tracking-wider",
-        widest: "tracking-widest"
-      };
-      const heights = {
-        normal: "leading-normal",
-        relaxed: "leading-relaxed",
-        loose: "leading-loose"
-      };
-      const aligns = {
-        left: "text-left",
-        center: "text-center",
-        right: "text-right"
-      };
-      const whitespaces = {
-        normal: "whitespace-normal",
-        nowrap: "whitespace-nowrap",
-        pre: "whitespace-pre",
-        preline: "whitespace-pre-line",
-        prewrap: "whitespace-pre-wrap"
-      };
-      let colorAndopacity = color.split(" ").map((element) => element.trim()).map((element) => element + "/" + String(opacity)).join(" ");
-      let classP = (0, import_classnames2.default)(size && sizes[size], opacity && colorAndopacity || color && color, height && heights[height], weight && weights[weight], space && spaces[space], align && aligns[align], justify && "text-justify", italic && "italic", firstupper && upperClass, whitespace && whitespaces[whitespace], $$props.class);
-      if ($$props.color === void 0 && $$bindings.color && color !== void 0)
-        $$bindings.color(color);
-      if ($$props.height === void 0 && $$bindings.height && height !== void 0)
-        $$bindings.height(height);
-      if ($$props.align === void 0 && $$bindings.align && align !== void 0)
-        $$bindings.align(align);
-      if ($$props.justify === void 0 && $$bindings.justify && justify !== void 0)
-        $$bindings.justify(justify);
-      if ($$props.italic === void 0 && $$bindings.italic && italic !== void 0)
-        $$bindings.italic(italic);
-      if ($$props.firstupper === void 0 && $$bindings.firstupper && firstupper !== void 0)
-        $$bindings.firstupper(firstupper);
-      if ($$props.upperClass === void 0 && $$bindings.upperClass && upperClass !== void 0)
-        $$bindings.upperClass(upperClass);
-      if ($$props.opacity === void 0 && $$bindings.opacity && opacity !== void 0)
-        $$bindings.opacity(opacity);
-      if ($$props.whitespace === void 0 && $$bindings.whitespace && whitespace !== void 0)
-        $$bindings.whitespace(whitespace);
-      if ($$props.size === void 0 && $$bindings.size && size !== void 0)
-        $$bindings.size(size);
-      if ($$props.space === void 0 && $$bindings.space && space !== void 0)
-        $$bindings.space(space);
-      if ($$props.weight === void 0 && $$bindings.weight && weight !== void 0)
-        $$bindings.weight(weight);
-      return `<p${spread([escape_object($$restProps), { class: escape_attribute_value(classP) }], {})}>${slots.default ? slots.default({}) : ``}</p>`;
-    });
     Page = create_ssr_component(($$result, $$props, $$bindings, slots) => {
-      return `<div class="text-center">${validate_component(Heading, "Heading").$$render(
-        $$result,
-        {
-          tag: "h1",
-          class: "mb-4",
-          customSize: "text-4xl font-extrabold  md:text-5xl lg:text-6xl"
-        },
-        {},
-        {
-          default: () => {
-            return `We invest in the world\u2019s potential`;
-          }
-        }
-      )}
-    ${validate_component(P, "P").$$render(
-        $$result,
-        {
-          class: "mb-6 text-lg lg:text-xl sm:px-16 xl:px-48 dark:text-gray-400"
-        },
-        {},
-        {
-          default: () => {
-            return `Here at Flowbite we focus on markets where technology, innovation, and capital can unlock long-term value and drive economic growth.`;
-          }
-        }
-      )}
-    ${validate_component(Button, "Button").$$render($$result, { href: "/" }, {}, {
-        default: () => {
-          return `Learn more 
-    <svg class="ml-2 -mr-1 w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clip-rule="evenodd"></path></svg>`;
-        }
-      })}</div>`;
+      return `<h1>home page</h1>`;
     });
   }
 });
@@ -1198,9 +286,9 @@ var init__3 = __esm({
   ".svelte-kit/output/server/nodes/2.js"() {
     index3 = 2;
     component3 = async () => (await Promise.resolve().then(() => (init_page_svelte(), page_svelte_exports))).default;
-    file3 = "_app/immutable/entry/_page.svelte.7c24f02f.js";
-    imports3 = ["_app/immutable/entry/_page.svelte.7c24f02f.js", "_app/immutable/chunks/index.14af5c92.js", "_app/immutable/chunks/Indicator.svelte_svelte_type_style_lang.7adfd83d.js"];
-    stylesheets3 = ["_app/immutable/assets/Indicator.1d121e74.css"];
+    file3 = "_app/immutable/entry/_page.svelte.f7297c82.js";
+    imports3 = ["_app/immutable/entry/_page.svelte.f7297c82.js", "_app/immutable/chunks/index.a6dfc2d3.js"];
+    stylesheets3 = [];
     fonts3 = [];
   }
 });
@@ -1236,8 +324,8 @@ var init__4 = __esm({
   ".svelte-kit/output/server/nodes/3.js"() {
     index4 = 3;
     component4 = async () => (await Promise.resolve().then(() => (init_page_svelte2(), page_svelte_exports2))).default;
-    file4 = "_app/immutable/entry/one-page.svelte.4a4e5a07.js";
-    imports4 = ["_app/immutable/entry/one-page.svelte.4a4e5a07.js", "_app/immutable/chunks/index.14af5c92.js"];
+    file4 = "_app/immutable/entry/one-page.svelte.d9c24be2.js";
+    imports4 = ["_app/immutable/entry/one-page.svelte.d9c24be2.js", "_app/immutable/chunks/index.a6dfc2d3.js"];
     stylesheets4 = [];
     fonts4 = [];
   }
@@ -1407,7 +495,7 @@ var options = {
 		<div class="error">
 			<span class="status">` + status + '</span>\n			<div class="message">\n				<h1>' + message + "</h1>\n			</div>\n		</div>\n	</body>\n</html>\n"
   },
-  version_hash: "3vmy3e"
+  version_hash: "ijjkuu"
 };
 function get_hooks() {
   return {};
@@ -1453,7 +541,7 @@ function negotiate(accept, types) {
 }
 function is_content_type(request, ...types) {
   const type = request.headers.get("content-type")?.split(";", 1)[0].trim() ?? "";
-  return types.includes(type);
+  return types.includes(type.toLowerCase());
 }
 function is_form_content_type(request) {
   return is_content_type(
@@ -4907,13 +3995,19 @@ var Server = class {
     const pub = Object.fromEntries(entries.filter(([k]) => k.startsWith(prefix2)));
     set_public_env(pub);
     if (!__privateGet(this, _options).hooks) {
-      const module = await get_hooks();
-      __privateGet(this, _options).hooks = {
-        handle: module.handle || (({ event, resolve }) => resolve(event)),
-        // @ts-expect-error
-        handleError: module.handleError || (({ error: error2 }) => console.error(error2?.stack)),
-        handleFetch: module.handleFetch || (({ request, fetch: fetch2 }) => fetch2(request))
-      };
+      try {
+        const module = await get_hooks();
+        __privateGet(this, _options).hooks = {
+          handle: module.handle || (({ event, resolve }) => resolve(event)),
+          // @ts-expect-error
+          handleError: module.handleError || (({ error: error2 }) => console.error(error2?.stack)),
+          handleFetch: module.handleFetch || (({ request, fetch: fetch2 }) => fetch2(request))
+        };
+      } catch (error2) {
+        {
+          throw error2;
+        }
+      }
     }
   }
   /**
@@ -4943,7 +4037,7 @@ var manifest = {
   assets: /* @__PURE__ */ new Set(["favicon.png", "kllogo.png"]),
   mimeTypes: { ".png": "image/png" },
   _: {
-    client: { "start": { "file": "_app/immutable/entry/start.8abcabbd.js", "imports": ["_app/immutable/entry/start.8abcabbd.js", "_app/immutable/chunks/index.14af5c92.js", "_app/immutable/chunks/singletons.cf6dfd31.js"], "stylesheets": [], "fonts": [] }, "app": { "file": "_app/immutable/entry/app.d151d0e6.js", "imports": ["_app/immutable/entry/app.d151d0e6.js", "_app/immutable/chunks/index.14af5c92.js"], "stylesheets": [], "fonts": [] } },
+    client: { "start": { "file": "_app/immutable/entry/start.f6994b0d.js", "imports": ["_app/immutable/entry/start.f6994b0d.js", "_app/immutable/chunks/index.a6dfc2d3.js", "_app/immutable/chunks/singletons.e65b2ad5.js"], "stylesheets": [], "fonts": [] }, "app": { "file": "_app/immutable/entry/app.7d8c8e21.js", "imports": ["_app/immutable/entry/app.7d8c8e21.js", "_app/immutable/chunks/index.a6dfc2d3.js"], "stylesheets": [], "fonts": [] } },
     nodes: [
       () => Promise.resolve().then(() => (init__(), __exports)),
       () => Promise.resolve().then(() => (init__2(), __exports2)),
@@ -5014,13 +4108,4 @@ export {
  * Copyright(c) 2015 Douglas Christopher Wilson
  * MIT Licensed
  */
-/*! Bundled license information:
-
-classnames/index.js:
-  (*!
-  	Copyright (c) 2018 Jed Watson.
-  	Licensed under the MIT License (MIT), see
-  	http://jedwatson.github.io/classnames
-  *)
-*/
 //# sourceMappingURL=render.js.map
