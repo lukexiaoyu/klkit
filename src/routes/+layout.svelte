@@ -1,20 +1,22 @@
 <script>
-
+  const adds=[
+    {name:'首页',link:'/'},
+    {name:'one',link:'/one'},
+    {name:'tools',link:'/tools'},
+    {name:'blog',link:'/blog'},
+  ]
  
 
   import "../app.postcss";
   import Nav from "../lib/Nav.svelte";
-  const adds = [
-    { name: "home", link: "/" },
-    { name: "one", link: "/one" },
-  ];
+  
   
 </script>
 
-<Nav></Nav>
-<div class="container mx-auto">
+<Nav {adds}></Nav>
+
   <slot></slot>
-</div>
+
 
 
 

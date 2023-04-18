@@ -26,8 +26,6 @@
   },
   "type": "module",
   "dependencies": {
-    
-    
-    
+    "gsap": "^3.11.5"
   }
 }
