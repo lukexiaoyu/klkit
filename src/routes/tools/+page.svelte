@@ -1,3 +1,5 @@
 <script></script>
-<main></main>
+<main>
+    <h1>tool home page</h1>
+</main>
 <style></style>
