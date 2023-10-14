@@ -7,6 +7,7 @@ import {page} from '$app/stores'
 const adds=[
     {name:'home',link:'/'},
     {name:'one',link:'/one'},
+    {name:'xata',link:'/xata'},
     
 ]
 </script>
