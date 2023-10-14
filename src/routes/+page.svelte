@@ -1,4 +1,5 @@
-<script>
-   
-  </script>
-<h1>home page</h1>
+<script></script>
+<div>
+    home page
+</div>
+<style></style>

@@ -1,5 +1,5 @@
 <script></script>
-<main>
+<div>
     <h1>one page</h1>
-</main>
+</div>
 <style></style>

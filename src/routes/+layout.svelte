@@ -1,24 +1,24 @@
 <script>
-  const adds=[
-    {name:'首页',link:'/'},
-    {name:'one',link:'/one'},
-    {name:'tools',link:'/tools'},
-    {name:'blog',link:'/blog'},
-    {name:'xata',link:'/xata'},
-  ]
- 
+import '../tailwind.css'
+import {page} from '$app/stores'
 
-  import "../app.postcss";
-  import Nav from "../lib/Nav.svelte";
-  
-  
+
+
+const adds=[
+    {name:'home',link:'/'},
+    {name:'one',link:'/one'},
+    {name:'xata',link:'/xata'},
+]
 </script>
 
-<Nav {adds}></Nav>
-
-  <slot></slot>
-
-
-
-
-<style></style>
+<nav class='container mx-auto grid grid-cols-8 gap-1'>
+    {#each adds as x}
+        <a href="{x.link}" class="p-2 rounded-md text-center" aria-current={$page.url.pathname===`${x.link}`}>{x.name}</a>
+    {/each}
+</nav>
+<slot />
+<style>
+    [aria-current='true']{
+        background-color:red;
+    }
+</style>

@@ -5,8 +5,7 @@
 
 
 @layer components{
-     .box{
-        @apply shadow shadow-md rounded-md p-2 shadow-gray-300
+    .box{
+        @apply shadow shadow-gray-200 rounded-md p-2
     }
-    
 }
