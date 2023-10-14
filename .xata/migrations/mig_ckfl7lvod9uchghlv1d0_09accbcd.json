@@ -1,0 +1,16 @@
+{
+  "id": "mig_ckfl7lvod9uchghlv1d0",
+  "parentID": "mig_ckfl7b7od9uchghlv1c0",
+  "checksum": "1:09accbcde32478ac5c73201391b6c190573a95bee9954f997ba760122516939d",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "name",
+          "type": "string"
+        },
+        "table": "sex"
+      }
+    }
+  ]
+}

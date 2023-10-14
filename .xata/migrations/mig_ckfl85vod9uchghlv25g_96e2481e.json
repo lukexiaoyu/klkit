@@ -1,0 +1,19 @@
+{
+  "id": "mig_ckfl85vod9uchghlv25g",
+  "parentID": "mig_ckfl7lvod9uchghlv1d0",
+  "checksum": "1:96e2481e8211133d731951d92d70f5bb1e148e04c60f008bb828b080ff720cef",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "sex",
+          "type": "link",
+          "link": {
+            "table": "sex"
+          }
+        },
+        "table": "peo"
+      }
+    }
+  ]
+}

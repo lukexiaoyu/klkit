@@ -1,0 +1,11 @@
+{
+  "id": "mig_ckce8hjmtf80uq9mhtng",
+  "checksum": "1:128df130f84600a8e4bfe966ad1b5d2d5281334df47d26387e2fe62f451fc893",
+  "operations": [
+    {
+      "addTable": {
+        "table": "peo"
+      }
+    }
+  ]
+}

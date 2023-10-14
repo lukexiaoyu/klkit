@@ -1,0 +1,12 @@
+{
+  "id": "mig_ckfl7b7od9uchghlv1c0",
+  "parentID": "mig_ckfl6n9ufph1r2rljhsg",
+  "checksum": "1:d35400e41f968c1603a2d6aab6a03a6df4b11d5e9ae9a98f5839d8b2d0cec817",
+  "operations": [
+    {
+      "addTable": {
+        "table": "sex"
+      }
+    }
+  ]
+}

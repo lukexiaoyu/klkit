@@ -4,6 +4,7 @@
     {name:'one',link:'/one'},
     {name:'tools',link:'/tools'},
     {name:'blog',link:'/blog'},
+    {name:'xata',link:'/xata'},
   ]
  
 

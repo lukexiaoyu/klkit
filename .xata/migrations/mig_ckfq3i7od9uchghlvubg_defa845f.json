@@ -1,0 +1,13 @@
+{
+  "id": "mig_ckfq3i7od9uchghlvubg",
+  "parentID": "mig_ckfl85vod9uchghlv25g",
+  "checksum": "1:defa845fc8d7ed9f3325cf6ee590e460bbd5ba0ded79f4905af545f475d9da65",
+  "operations": [
+    {
+      "removeColumn": {
+        "column": "sex",
+        "table": "peo"
+      }
+    }
+  ]
+}

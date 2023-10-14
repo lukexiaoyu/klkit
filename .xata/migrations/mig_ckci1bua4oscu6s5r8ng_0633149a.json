@@ -1,0 +1,18 @@
+{
+  "id": "mig_ckci1bua4oscu6s5r8ng",
+  "parentID": "mig_ckce8hjmtf80uq9mhtng",
+  "checksum": "1:0633149a90db0f6613f94a0bbddfbf0fe1430a23f0e66e645da0c61ee39f3020",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "name",
+          "type": "string",
+          "notNull": true,
+          "defaultValue": "姓名"
+        },
+        "table": "peo"
+      }
+    }
+  ]
+}

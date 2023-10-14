@@ -1,0 +1,16 @@
+{
+  "id": "mig_ckfl6n9ufph1r2rljhsg",
+  "parentID": "mig_ckcnspua4oscu6s5s7lg",
+  "checksum": "1:fc0fb9ec719fa2c58df9c2dc8184802f1a21644353591828ce86f7d63e8639b6",
+  "operations": [
+    {
+      "addColumn": {
+        "column": {
+          "name": "age",
+          "type": "int"
+        },
+        "table": "peo"
+      }
+    }
+  ]
+}

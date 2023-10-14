@@ -1,0 +1,12 @@
+{
+  "id": "mig_ckfq3jfod9uchghlvucg",
+  "parentID": "mig_ckfq3i7od9uchghlvubg",
+  "checksum": "1:147e57f738c186bc346cda3ec310da64d9ecfaa6054dcbcc4feaf01218b9192e",
+  "operations": [
+    {
+      "removeTable": {
+        "table": "sex"
+      }
+    }
+  ]
+}
