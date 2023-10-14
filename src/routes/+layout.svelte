@@ -8,6 +8,7 @@ const adds=[
     {name:'home',link:'/'},
     {name:'one',link:'/one'},
     {name:'xata',link:'/xata'},
+    {name:'learn',link:'/learn'},
     
 ]
 </script>
