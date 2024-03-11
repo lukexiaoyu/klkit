@@ -9,6 +9,7 @@ const adds=[
     {name:'one',link:'/one'},
     {name:'xata',link:'/xata'},
     {name:'learn',link:'/learn'},
+    {name:'sb',link:'/supbase'},
     
 ]
 </script>
